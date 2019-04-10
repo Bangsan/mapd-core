@@ -353,6 +353,7 @@ static std::set<std::string> reserved_keywords{
     "SHOW",
     "SIMILAR",
     "SKIP",
+	"SKYLINE",
     "SMALLINT",
     "SOME",
     "SPECIFIC",
