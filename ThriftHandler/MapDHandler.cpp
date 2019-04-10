@@ -3960,9 +3960,10 @@ void MapDHandler::sql_execute_impl(TQueryResult& _return,
       std::string query_ra;
       _return.execution_time_ms += measure<>::execution([&]() {
         // query_ra = TIME_WRAP(parse_to_ra)(query_str, session_info);
+        std::cout<<"---------sql_execute_impl:query_string:befor"<<query_ra<<"---------"<<std::endl;
         query_ra = parse_to_ra(query_str, {}, session_info, &tableNames);
       });
-	  std::cout<<"---------query_string:"<<query_ra<<"---------"<<std::endl;
+	  std::cout<<"---------sql_execute_impl:query_string:after"<<query_ra<<"---------"<<std::endl;
       std::string query_ra_calcite_explain;
       if (pw.is_select_calcite_explain && (!g_enable_filter_push_down || g_cluster)) {
         // return the ra as the result
