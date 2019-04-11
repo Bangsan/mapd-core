@@ -147,6 +147,7 @@ public class MapDSqlOperatorTable extends ChainedSqlOperatorTable {
     opTab.addOperator(new Unlikely());
     opTab.addOperator(new Sign());
     opTab.addOperator(new Truncate());
+	opTab.addOperator(new Skyline_Of());	
     opTab.addOperator(new ST_Contains());
     opTab.addOperator(new ST_Intersects());
     opTab.addOperator(new ST_Disjoint());
@@ -645,6 +646,32 @@ public class MapDSqlOperatorTable extends ChainedSqlOperatorTable {
     }
   }
 
+static class Skyline_Of extends SqlFunction {
+    Skyline_Of() {
+		super("Skyline_Of",
+              SqlKind.OTHER_FUNCTION,
+              null,
+              null,
+              OperandTypes.family(signature()),
+              SqlFunctionCategory.SYSTEM);
+    }
+
+    @Override
+    public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
+		assert opBinding.getOperandCount() == 2;
+		final RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+		return typeFactory.createSqlType(SqlTypeName.BOOLEAN);
+    }
+
+    private static java.util.List<SqlTypeFamily> signature() {
+		java.util.List<SqlTypeFamily> st_contains_sig =
+			new java.util.ArrayList<SqlTypeFamily>();
+		st_contains_sig.add(SqlTypeFamily.ANY);
+		st_contains_sig.add(SqlTypeFamily.ANY);
+		return st_contains_sig;
+    }
+}
+
   static class ST_Contains extends SqlFunction {
     ST_Contains() {
       super("ST_Contains",
@@ -669,7 +696,7 @@ public class MapDSqlOperatorTable extends ChainedSqlOperatorTable {
       st_contains_sig.add(SqlTypeFamily.ANY);
       return st_contains_sig;
     }
-  }
+}
 
   static class ST_Intersects extends SqlFunction {
     ST_Intersects() {

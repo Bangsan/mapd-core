@@ -72,6 +72,9 @@ class CalciteServerHandler implements CalciteServer.Iface {
     this.parserPool = new GenericObjectPool();
     this.mapdPort = mapdPort;
 
+	StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+	System.out.println(stackTrace[1].getClassName()+"	"+stackTrace[1].getMethodName()+"	"+stackTrace[1].getLineNumber());
+	
     Map<String, ExtensionFunction> extSigs = null;
     try {
       extSigs = ExtensionFunctionSignatureParser.parse(extensionFunctionsAstFile);

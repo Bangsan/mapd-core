@@ -4360,12 +4360,14 @@ void MapDHandler::sql_execute_impl(TQueryResult& _return,
   try {
     ParserWrapper pw{query_str};
     std::map<std::string, bool> tableNames;
+	std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
     if (is_calcite_path_permissable(pw, read_only_)) {
       std::string query_ra;
       _return.execution_time_ms += measure<>::execution([&]() {
         // query_ra = TIME_WRAP(parse_to_ra)(query_str, session_info);
+		std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
         std::cout<<"---------sql_execute_impl:query_string:befor"<<query_ra<<"---------"<<std::endl;
-        query_ra = parse_to_ra(query_str, {}, session_info, &tableNames);
+        query_ra = parse_to_ra(query_str, {}, session_info, &tableNames);//com.mapd.calcite.parser.MapDParser	queryToSqlNode
       });
 	  std::cout<<"---------sql_execute_impl:query_string:after"<<query_ra<<"---------"<<std::endl;
       std::string query_ra_calcite_explain;
@@ -4379,7 +4381,7 @@ void MapDHandler::sql_execute_impl(TQueryResult& _return,
             query_str.substr(std::string("explain calcite ").length());
         query_ra_calcite_explain = parse_to_ra(temp_query_str, {}, session_info);
       }
-
+      std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
       // UPDATE/DELETE needs to get a checkpoint lock as the first lock
       for (const auto& table : tableNames) {
         if (table.second) {
@@ -4387,6 +4389,7 @@ void MapDHandler::sql_execute_impl(TQueryResult& _return,
               session_info.getCatalog(), table.first, LockType::CheckpointLock);
         }
       }
+	  std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
       // COPY_TO/SELECT: read ExecutorOuterLock >> read UpdateDeleteLock locks
       executeReadLock = mapd_shared_lock<mapd_shared_mutex>(
           *LockMgr<mapd_shared_mutex, bool>::getMutex(ExecutorOuterLock, true));
@@ -4410,6 +4413,7 @@ void MapDHandler::sql_execute_impl(TQueryResult& _return,
         convert_explain(_return, ResultSet(query_ra), true);
         return;
       }
+	  std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
       if (!filter_push_down_requests.empty()) {
         execute_rel_alg_with_filter_push_down(_return,
                                               query_ra,
@@ -4431,11 +4435,13 @@ void MapDHandler::sql_execute_impl(TQueryResult& _return,
         convert_explain(_return, ResultSet(query_ra), true);
         return;
       }
+	  std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
       if (pw.is_select_calcite_explain) {
         // If we reach here, the filter push down candidates has been selected and
         // proper output result has been already created.
         return;
       }
+	  std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
       if (pw.is_select_calcite_explain) {
         // return the ra as the result:
         // If we reach here, the 'filter_push_down_request' turned out to be empty, i.e.,
@@ -4481,7 +4487,7 @@ void MapDHandler::sql_execute_impl(TQueryResult& _return,
           }
           return true;
         };
-
+		std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
         if (!td || !user_can_access_table(td)) {
           throw std::runtime_error("Table " + optimize_stmt->getTableName() +
                                    " does not exist.");
@@ -4506,9 +4512,11 @@ void MapDHandler::sql_execute_impl(TQueryResult& _return,
     LOG(INFO) << "passing query to legacy processor";
   } catch (std::exception& e) {
     if (strstr(e.what(), "java.lang.NullPointerException")) {
+      std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
       THROW_MAPD_EXCEPTION(std::string("Exception: ") +
                            "query failed from broken view or other schema related issue");
     } else {
+	  std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
       THROW_MAPD_EXCEPTION(std::string("Exception: ") + e.what());
     }
   }

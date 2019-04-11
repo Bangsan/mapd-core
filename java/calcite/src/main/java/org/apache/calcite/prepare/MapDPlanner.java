@@ -220,6 +220,9 @@ public class MapDPlanner implements Planner {
         ready();
     }
     ensure(State.STATE_2_READY);
+	StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+	System.out.println(stackTrace[1].getClassName()+"	"+stackTrace[1].getMethodName()+stackTrace[1].getLineNumber());
+
     SqlParser parser = SqlParser.create(sql, parserConfig);
     SqlNode sqlNode = parser.parseStmt();
     state = State.STATE_3_PARSED;

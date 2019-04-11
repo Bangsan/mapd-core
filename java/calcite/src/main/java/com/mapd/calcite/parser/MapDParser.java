@@ -193,6 +193,8 @@ public final class MapDParser {
           throws SqlParseException, ValidationException, RelConversionException {
     MapDPlanner planner = getPlanner();
 
+	StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+	System.out.println(stackTrace[1].getClassName()+"	"+stackTrace[1].getMethodName()+"	"+stackTrace[1].getLineNumber());
     SqlNode node = processSQL(sql, legacy_syntax, planner);
     if (legacy_syntax) {
       // close original planner
@@ -250,9 +252,13 @@ public final class MapDParser {
 
   private static boolean isSelectStar(SqlNode node) {
     SqlSelect select_node = getSelectChild(node);
+	StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+	System.out.println(stackTrace[1].getClassName()+"	"+stackTrace[1].getMethodName()+stackTrace[1].getLineNumber());
     if (select_node == null) {
       return false;
     }
+	//StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+	System.out.println(stackTrace[1].getClassName()+"	"+stackTrace[1].getMethodName()+stackTrace[1].getLineNumber());
     SqlNode from = getUnaliasedExpression(select_node.getFrom());
     if (from instanceof SqlCall) {
       return false;
@@ -285,6 +291,8 @@ public final class MapDParser {
           throws SqlParseException {
     SqlNode parseR = null;
     try {
+      StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+	  System.out.println(stackTrace[1].getClassName()+"	"+stackTrace[1].getMethodName()+stackTrace[1].getLineNumber());
       parseR = planner.parse(sql);
       MAPDLOGGER.debug(" node is \n" + parseR.toString());
     } catch (SqlParseException ex) {
