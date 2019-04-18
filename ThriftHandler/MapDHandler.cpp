@@ -733,6 +733,7 @@ void MapDHandler::sql_execute(TQueryResult& _return,
                               const std::string& nonce,
                               const int32_t first_n,
                               const int32_t at_most_n) {
+  cout<<__FUNCTION__<<"	"<<__LINE__<<endl;
   ScopeGuard reset_was_geo_copy_from = [&] { _was_geo_copy_from = false; };
   if (first_n >= 0 && at_most_n >= 0) {
     THROW_MAPD_EXCEPTION(std::string("At most one of first_n and at_most_n can be set"));
@@ -4010,7 +4011,7 @@ std::vector<PushedDownFilterInfo> MapDHandler::execute_rel_alg(
                                         jit_debug_ ? "mapdquery" : "",
                                         mapd_parameters_,
                                         nullptr);
-  RelAlgExecutor ra_executor(executor.get(), cat);
+  RelAlgExecutor ra_executor(executor.get(), cat);//生成RelAlgExecutor类型的执行器
   ExecutionResult result{std::make_shared<ResultSet>(std::vector<TargetInfo>{},
                                                      ExecutorDeviceType::CPU,
                                                      QueryMemoryDescriptor(),
@@ -4018,7 +4019,7 @@ std::vector<PushedDownFilterInfo> MapDHandler::execute_rel_alg(
                                                      nullptr),
                          {}};
   _return.execution_time_ms += measure<>::execution(
-      [&]() { result = ra_executor.executeRelAlgQuery(query_ra, co, eo, nullptr); });
+      [&]() { result = ra_executor.executeRelAlgQuery(query_ra, co, eo, nullptr); });//调用执行器RelAlgExecutor执行查询
   // reduce execution time by the time spent during queue waiting
   _return.execution_time_ms -= result.getRows()->getQueueTime();
   const auto& filter_push_down_info = result.getPushedDownFilterInfo();
@@ -4362,11 +4363,12 @@ void MapDHandler::sql_execute_impl(TQueryResult& _return,
     std::map<std::string, bool> tableNames;
 	std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
     if (is_calcite_path_permissable(pw, read_only_)) {
-      std::string query_ra;
+      std::string query_ra;//用于保存查询计划字符串
       _return.execution_time_ms += measure<>::execution([&]() {
         // query_ra = TIME_WRAP(parse_to_ra)(query_str, session_info);
 		std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
         std::cout<<"---------sql_execute_impl:query_string:befor"<<query_ra<<"---------"<<std::endl;
+		//得到查询计划树，json格式
         query_ra = parse_to_ra(query_str, {}, session_info, &tableNames);//com.mapd.calcite.parser.MapDParser	queryToSqlNode
       });
 	  std::cout<<"---------sql_execute_impl:query_string:after"<<query_ra<<"---------"<<std::endl;
@@ -4395,6 +4397,7 @@ void MapDHandler::sql_execute_impl(TQueryResult& _return,
           *LockMgr<mapd_shared_mutex, bool>::getMutex(ExecutorOuterLock, true));
       getTableLocks<mapd_shared_mutex>(
           session_info.getCatalog(), tableNames, upddelLocks, LockType::UpdateDeleteLock);
+	  //查询执行
       const auto filter_push_down_requests = execute_rel_alg(
           _return,
           pw.is_select_calcite_explain ? query_ra_calcite_explain : query_ra,
@@ -4808,6 +4811,8 @@ std::string MapDHandler::parse_to_ra(
     const Catalog_Namespace::SessionInfo& session_info,
     std::map<std::string, bool>* tableNames) {
   INJECT_TIMER(parse_to_ra);
+  cout<<__FUNCTION__<<"	"<<__LINE__<<endl;
+  cout<<query_str<<endl;
   ParserWrapper pw{query_str};
   const std::string actual_query{
       pw.is_select_explain || pw.is_select_calcite_explain ? pw.actual_query : query_str};
@@ -4817,6 +4822,7 @@ std::string MapDHandler::parse_to_ra(
                                     filter_push_down_info,
                                     legacy_syntax_,
                                     pw.is_select_calcite_explain);
+	//result为 TPlanResult类型
     if (tableNames) {
       for (const auto& table : result.resolved_accessed_objects.tables_selected_from) {
         (*tableNames)[table] = false;
@@ -4831,7 +4837,7 @@ std::string MapDHandler::parse_to_ra(
         }
       }
     }
-    return result.plan_result;
+    return result.plan_result;//返回查询计划字符串
   }
   return "";
 }

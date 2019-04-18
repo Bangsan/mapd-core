@@ -1087,6 +1087,12 @@ void check_empty_inputs_field(const rapidjson::Value& node) noexcept {
 // nodes. This coalescing minimizes the amount of intermediate buffers required to
 // evaluate a query. Lower level optimizations are taken care by lower levels, mainly
 // RelAlgTranslator and the IR code generation.
+//从序列化的JSON表示创建一个内存中，易于导航的关系代数DAG。
+//此外，应用高级优化，可以通过使用RelCompound扩展的关系代数表示。
+//RelCompound节点是RelFilter，RelProject和RelAggregate节点序列的等效表示。
+//此合并最小化了评估查询所需的中间缓冲区的数量。
+//较低级别（主要是RelAlgTranslator和IR代码生成）负责较低级别的优化。
+
 class RelAlgAbstractInterpreter {
  public:
   RelAlgAbstractInterpreter(const rapidjson::Value& query_ast,
@@ -1135,6 +1141,7 @@ class RelAlgAbstractInterpreter {
   }
 
  private:
+ //结点类型
   void dispatchNodes(const rapidjson::Value& rels) {
     for (auto rels_it = rels.Begin(); rels_it != rels.End(); ++rels_it) {
       const auto& crt_node = *rels_it;
@@ -1390,7 +1397,7 @@ std::shared_ptr<const RelAlgNode> deserialize_ra_dag(
     const Catalog_Namespace::Catalog& cat,
     RelAlgExecutor* ra_executor) {
   rapidjson::Document query_ast;
-  query_ast.Parse(query_ra.c_str());
+  query_ast.Parse(query_ra.c_str());//对查询计划树的json串进行解析
   CHECK(!query_ast.HasParseError());
   CHECK(query_ast.IsObject());
   RelAlgNode::resetRelAlgFirstId();

@@ -1083,6 +1083,7 @@ bool match_sort_seq(rapidjson::Value::ConstValueIterator& rels_it,
 // We don't aim to support everything Calcite allows in this adapter. Inspect
 // the nodes and reject queries which go beyond the legacy front-end.
 bool query_is_supported(const rapidjson::Value& rels) {
+  cout<<__FUNTION__<<"	"<<__LINE__<<endl;
   rapidjson::Value::ConstValueIterator rels_it = rels.Begin();
   if (std::string("EnumerableTableScan") != get_op_name(*rels_it++)) {
     return false;
@@ -1121,6 +1122,7 @@ bool query_is_supported(const rapidjson::Value& rels) {
 
 Planner::RootPlan* translate_query(const std::string& query,
                                    const Catalog_Namespace::Catalog& cat) {
+  cout<<__FUNCTION__<<"   "<<__LINE__<<endl;
   rapidjson::Document query_ast;
   query_ast.Parse(query.c_str());
   CHECK(!query_ast.HasParseError());
