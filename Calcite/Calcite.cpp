@@ -364,7 +364,7 @@ TPlanResult Calcite::processImpl(
     const std::vector<TFilterPushDownInfo>& filter_push_down_info,
     const bool legacy_syntax,
     const bool is_explain) {
-  cout<<__FUNCTION__<<"	"<<__LINE__<<endl;
+  std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
   auto& cat = session_info.getCatalog();
   std::string user = session_info.get_currentUser().userName;
   std::string session = session_info.get_session_id();

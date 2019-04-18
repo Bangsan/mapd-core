@@ -116,7 +116,7 @@ ExecutionResult RelAlgExecutor::executeRelAlgQuery(const std::string& query_ra,
                                                    const CompilationOptions& co,
                                                    const ExecutionOptions& eo,
                                                    RenderInfo* render_info) {
-  cout<<__FUNCTION__<<"	"<<__LINE__<<endl;
+  std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
   INJECT_TIMER(executeRelAlgQuery);
   try {
     return executeRelAlgQueryNoRetry(query_ra, co, eo, render_info);
@@ -140,7 +140,7 @@ ExecutionResult RelAlgExecutor::executeRelAlgQueryNoRetry(const std::string& que
                                                           const CompilationOptions& co,
                                                           const ExecutionOptions& eo,
                                                           RenderInfo* render_info) {
-  cout<<__FUNCTION__<<"	"<<__LINE__<<endl;
+  std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
   INJECT_TIMER(executeRelAlgQueryNoRetry);
 
   const auto ra = deserialize_ra_dag(query_ra, cat_, this);
@@ -362,7 +362,7 @@ ExecutionResult RelAlgExecutor::executeRelAlgSeq(std::vector<RaExecutionDesc>& e
                                                  const ExecutionOptions& eo,
                                                  RenderInfo* render_info,
                                                  const int64_t queue_time_ms) {
-  cout<<__FUNCTION__<<"	"<<__LINE__<<endl;
+  std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
   INJECT_TIMER(executeRelAlgSeq);
   decltype(temporary_tables_)().swap(temporary_tables_);
   decltype(target_exprs_owned_)().swap(target_exprs_owned_);
@@ -399,7 +399,7 @@ void RelAlgExecutor::executeRelAlgStep(const size_t i,
                                        const ExecutionOptions& eo,
                                        RenderInfo* render_info,
                                        const int64_t queue_time_ms) {
-  cout<<__FUNCTION__<<"	"<<__LINE__<<endl;
+  std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
   INJECT_TIMER(executeRelAlgStep);
   auto& exec_desc = exec_descs[i];
   const auto body = exec_desc.getBody();

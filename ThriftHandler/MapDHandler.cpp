@@ -733,7 +733,7 @@ void MapDHandler::sql_execute(TQueryResult& _return,
                               const std::string& nonce,
                               const int32_t first_n,
                               const int32_t at_most_n) {
-  cout<<__FUNCTION__<<"	"<<__LINE__<<endl;
+  std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
   ScopeGuard reset_was_geo_copy_from = [&] { _was_geo_copy_from = false; };
   if (first_n >= 0 && at_most_n >= 0) {
     THROW_MAPD_EXCEPTION(std::string("At most one of first_n and at_most_n can be set"));
@@ -4811,8 +4811,8 @@ std::string MapDHandler::parse_to_ra(
     const Catalog_Namespace::SessionInfo& session_info,
     std::map<std::string, bool>* tableNames) {
   INJECT_TIMER(parse_to_ra);
-  cout<<__FUNCTION__<<"	"<<__LINE__<<endl;
-  cout<<query_str<<endl;
+  std::cout<<__FUNCTION__<<"	"<<__LINE__<<std::endl;
+  std::cout<<query_str<<std::endl;
   ParserWrapper pw{query_str};
   const std::string actual_query{
       pw.is_select_explain || pw.is_select_calcite_explain ? pw.actual_query : query_str};
